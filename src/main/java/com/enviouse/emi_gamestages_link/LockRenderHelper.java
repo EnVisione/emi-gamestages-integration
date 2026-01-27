@@ -34,7 +34,7 @@ public class LockRenderHelper {
         graphics.pose().pushPose();
 
         // Translate to high z-level
-        graphics.pose().translate(0, 0, 400);
+        graphics.pose().translate(0, 0, 1000);
 
         // Disable depth test to render on top
         RenderSystem.disableDepthTest();
@@ -43,18 +43,20 @@ public class LockRenderHelper {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
 
-        // Set shader color to white (no tint)
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        // Bind the texture for the blit call
+        RenderSystem.setShaderTexture(0, LOCK_ICON);
 
-        // Draw the lock icon
+        // Draw the lock icon (uses the GuiGraphics blit which expects texture size parameters)
         graphics.blit(LOCK_ICON, x, y, 0, 0, iconSize, iconSize, iconSize, iconSize);
 
         // Restore state
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.disableBlend();
         RenderSystem.enableDepthTest();
 
         graphics.pose().popPose();
+
+        // Flush again to make sure we don't interfere with subsequent batched renders
+        graphics.flush();
     }
 
     /**

@@ -25,6 +25,7 @@ public class ModConfiguration {
     private static final ForgeConfigSpec.BooleanValue SHOW_LOCK_ON_ITEM_LIST;
     private static final ForgeConfigSpec.IntValue HIGHLIGHT_COLOR;
     private static final ForgeConfigSpec.BooleanValue SHOW_TOOLTIP_INFO;
+    private static final ForgeConfigSpec.BooleanValue SHOW_LOCKED_RECIPES;
 
     // Integration settings
     private static final ForgeConfigSpec.BooleanValue ENABLE_ITEMSTAGES_INTEGRATION;
@@ -65,6 +66,11 @@ public class ModConfiguration {
                 .comment("Show locked stage information in item tooltips when hovering")
                 .define("showTooltipInfo", true);
 
+        // New flag: prevent JEI from hiding locked recipes/ingredients when true
+        SHOW_LOCKED_RECIPES = BUILDER
+                .comment("If true, attempt to prevent JEI (and JEI-based plugins) from hiding locked recipes/ingredients; EMI will re-add missing ingredients on stage sync.")
+                .define("showLockedRecipes", true);
+
         BUILDER.pop();
 
         BUILDER.comment("Integration Settings - Automatic detection from other mods").push("integration");
@@ -103,6 +109,7 @@ public class ModConfiguration {
     public static boolean showLockOnItemList;
     public static int highlightColor;
     public static boolean showTooltipInfo;
+    public static boolean showLockedRecipes;
     public static boolean enableItemStagesIntegration;
     public static boolean enableRecipeStagesIntegration;
     public static Map<String, String> itemLocks = new HashMap<>();
@@ -122,6 +129,7 @@ public class ModConfiguration {
         showLockOnItemList = SHOW_LOCK_ON_ITEM_LIST.get();
         highlightColor = HIGHLIGHT_COLOR.get();
         showTooltipInfo = SHOW_TOOLTIP_INFO.get();
+        showLockedRecipes = SHOW_LOCKED_RECIPES.get();
         enableItemStagesIntegration = ENABLE_ITEMSTAGES_INTEGRATION.get();
         enableRecipeStagesIntegration = ENABLE_RECIPESTAGES_INTEGRATION.get();
 

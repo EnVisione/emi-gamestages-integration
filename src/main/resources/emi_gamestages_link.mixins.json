@@ -8,7 +8,9 @@
   ],
   "client": [
     "SlotWidgetMixin",
-    "EmiScreenManagerMixin"
+    "EmiScreenManagerMixin",
+    "ItemStagesPluginMixin",
+    "JemiRecipeHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

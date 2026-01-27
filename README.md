@@ -7,8 +7,7 @@ A Minecraft Forge mod that integrates [EMI](https://modrinth.com/mod/emi) with [
 - **Automatic ItemStages Integration**: Automatically detects items locked by [ItemStages](https://www.curseforge.com/minecraft/mc-mods/item-stages) - no config needed!
 - **Automatic RecipeStages Integration**: Automatically detects recipes locked by [RecipeStages](https://www.curseforge.com/minecraft/mc-mods/recipe-stages) - no config needed!
 - **Lock Icon Overlay**: Shows a lock icon on items that are locked by GameStages
-- **"Locked to <stage>" Label**: Displays a label above locked recipes showing the required stage
-- **Tooltip Info**: Shows which stage is required when hovering over locked items
+- **Tooltip Info**: Shows which stage is required when hovering over locked items (includes mod id)
 - **Orange Highlight**: Highlights locked output slots in semi-transparent orange
 - **Item List Integration**: Shows lock icons on locked items in EMI's search/item list panels
 - **Manual Config Support**: Configure additional locks based on item IDs or tags
@@ -66,13 +65,10 @@ The mod creates a configuration file at `config/emi_gamestages_link-common.toml`
 
 ```toml
 [display]
-# Show 'Locked to <stage>' label above locked recipes
-showLockLabel = true
-
 # Show lock icon on locked items/outputs
 showLockIcon = true
 
-# Highlight locked recipe outputs in red
+# Highlight locked recipe outputs (semi-transparent orange by default)
 highlightLockedOutput = true
 
 # Size of the lock icon in pixels (6-16)
@@ -84,8 +80,12 @@ iconPadding = 1
 # Show lock icon on items in EMI search/item list panels
 showLockOnItemList = true
 
-# Color for the locked output highlight (ARGB hex)
-highlightColor = 0x80FF0000
+# Color for the locked output highlight (ARGB hex, alpha first): 0x50FFAA40 is semi-transparent light orange
+highlightColor = 0x50FFAA40
+
+# If true, attempt to prevent JEI (and JEI-based plugins) from hiding locked recipes/ingredients.
+# When enabled, the mod will re-add missing JEI ingredients on stage sync/recipe updates so EMI can display locks.
+showLockedRecipes = true
 ```
 
 ### Lock Definitions
@@ -113,7 +113,7 @@ tags = [
 2. **Automatic Detection (RecipeStages)**: If RecipeStages is installed, the mod automatically detects recipes that are stage-locked
 3. **Config Fallback**: If the item isn't locked by ItemStages, checks the manual config for item/tag locks
 4. **Player Stage Check**: Uses GameStages API to check if the player has the required stage
-5. **Visual Indicators**: If locked, shows the lock icon, label, and/or red highlight
+5. **Visual Indicators**: If locked, shows the lock icon and an orange highlight; the tooltip shows required stage and mod id
 
 ### Integration Settings
 
@@ -132,9 +132,8 @@ You can disable automatic integrations if you prefer to use only manual config l
 
 When an item is locked:
 - A lock icon appears at the top-left corner of the item slot (to avoid overlapping with item counts)
-- The recipe display shows "🔒 Locked to: <stage_name>" at the top
 - The output slot is highlighted in semi-transparent orange
-- Hovering over the item shows "🔒 This item is locked" and "Stage required: <stage_name>" in the tooltip
+- Hovering over the item shows the mod id, a lock indicator, and the required stage in the tooltip
 
 ## License
 
@@ -144,4 +143,3 @@ All Rights Reserved
 
 - Lock icon texture included as `PIXELLOCK.png`
 - Built for integration with EMI by emi and GameStages by Darkhax
-
