@@ -1,4 +1,4 @@
-package com.enviouse.emi_gamestages_link;
+package com.enviouse.emi_gamestages_link.common;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

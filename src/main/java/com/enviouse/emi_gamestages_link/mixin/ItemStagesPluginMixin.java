@@ -1,6 +1,6 @@
 package com.enviouse.emi_gamestages_link.mixin;
 
-import com.enviouse.emi_gamestages_link.ModConfiguration;
+import com.enviouse.emi_gamestages_link.common.ModConfiguration;
 import mezz.jei.api.runtime.IIngredientManager;
 import net.darkhax.itemstages.jei.PluginItemStages;
 import org.spongepowered.asm.mixin.Mixin;

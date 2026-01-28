@@ -1,7 +1,9 @@
-package com.enviouse.emi_gamestages_link;
+package com.enviouse.emi_gamestages_link.client;
 
-import com.enviouse.emi_gamestages_link.integration.IntegrationManager;
-import com.enviouse.emi_gamestages_link.integration.ItemStagesIntegration;
+import com.enviouse.emi_gamestages_link.common.ModConfiguration;
+import com.enviouse.emi_gamestages_link.common.LockEntry;
+import com.enviouse.emi_gamestages_link.common.integration.IntegrationManager;
+import com.enviouse.emi_gamestages_link.common.integration.ItemStagesIntegration;
 import net.darkhax.gamestages.GameStageHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -17,51 +19,55 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Resolves stage locks for items.
- * Checks ItemStages integration first, then falls back to config-based locks.
+ * Client-side stage lock resolver.
+ * Uses server-synced data from LockStateCache when available,
+ * with fallback to local detection for immediate responsiveness.
  */
-public class StageLockResolver {
+public class ClientStageLockResolver {
 
-    // Cache for config-based lock resolutions
-    private static final Map<String, Optional<String>> lockCache = new ConcurrentHashMap<>();
+    // Cache for config-based lock resolutions (fallback)
+    private static final Map<String, Optional<String>> localCache = new ConcurrentHashMap<>();
     private static long lastCacheInvalidation = 0;
-    private static final long CACHE_TTL = 5000; // 5 seconds
+    private static final long CACHE_TTL = 5000;
 
     /**
      * Gets the required stage for an ItemStack.
-     *
-     * @param stack The ItemStack to check
-     * @return The required stage name, or empty if not locked
+     * First checks server-synced data, then falls back to local detection.
      */
     public static Optional<String> getRequiredStage(ItemStack stack) {
         if (stack.isEmpty()) {
             return Optional.empty();
         }
 
-        // Check ItemStages first (not cached because it's player-specific)
-        if (IntegrationManager.isItemStagesLoaded()) {
-            Optional<String> itemStagesResult = ItemStagesIntegration.getRequiredStage(stack);
-            if (itemStagesResult.isPresent()) {
-                return itemStagesResult;
-            }
-        }
-
-        // Fall back to config-based lookups (cached)
-        invalidateCacheIfNeeded();
-
         ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
         if (itemId == null) {
             return Optional.empty();
         }
 
-        return lockCache.computeIfAbsent(itemId.toString(), id -> computeConfigStage(stack, id));
+        // Check server-synced lock data first
+        LockEntry serverEntry = LockStateCache.getItemLockEntry(itemId);
+        if (serverEntry != null) {
+            return Optional.of(serverEntry.requiredStage());
+        }
+
+        // Fallback to ItemStages local detection (for immediate responsiveness)
+        if (IntegrationManager.isItemStagesLoaded()) {
+            Player player = Minecraft.getInstance().player;
+            if (player != null) {
+                Optional<String> itemStagesResult = ItemStagesIntegration.getRequiredStage(player, stack);
+                if (itemStagesResult.isPresent()) {
+                    return itemStagesResult;
+                }
+            }
+        }
+
+        // Fallback to config-based lookups
+        invalidateCacheIfNeeded();
+        return localCache.computeIfAbsent(itemId.toString(), id -> computeConfigStage(stack, id));
     }
 
     /**
      * Checks if an ItemStack is locked for the current player.
-     *
-     * @param stack The ItemStack to check
-     * @return true if the item is locked
      */
     public static boolean isLocked(ItemStack stack) {
         Optional<String> requiredStage = getRequiredStage(stack);
@@ -69,6 +75,12 @@ public class StageLockResolver {
             return false;
         }
 
+        // Check server-synced stage data first
+        if (LockStateCache.hasStage(requiredStage.get())) {
+            return false; // Player has the stage
+        }
+
+        // Fallback to local GameStageHelper check
         Player player = Minecraft.getInstance().player;
         if (player == null) {
             return true; // No player, assume locked
@@ -79,9 +91,6 @@ public class StageLockResolver {
 
     /**
      * Gets the lock info for an item (for display purposes).
-     *
-     * @param stack The ItemStack to check
-     * @return LockInfo if locked, null otherwise
      */
     @Nullable
     public static LockInfo getLockInfo(ItemStack stack) {
@@ -90,22 +99,25 @@ public class StageLockResolver {
             return null;
         }
 
+        boolean isLocked = !LockStateCache.hasStage(requiredStage.get());
+
+        // Double-check with local data if we have a player
         Player player = Minecraft.getInstance().player;
-        if (player == null) {
-            return new LockInfo(requiredStage.get(), true);
+        if (player != null && !isLocked) {
+            isLocked = !GameStageHelper.hasStage(player, requiredStage.get());
         }
 
-        boolean isLocked = !GameStageHelper.hasStage(player, requiredStage.get());
         return new LockInfo(requiredStage.get(), isLocked);
     }
 
     private static void invalidateCacheIfNeeded() {
         long now = System.currentTimeMillis();
         if (now - lastCacheInvalidation > CACHE_TTL) {
-            lockCache.clear();
+            localCache.clear();
             lastCacheInvalidation = now;
         }
     }
+
 
     private static Optional<String> computeConfigStage(ItemStack stack, String itemId) {
         // Check direct item locks from config
@@ -130,6 +142,14 @@ public class StageLockResolver {
         }
 
         return Optional.empty();
+    }
+
+    /**
+     * Clear the local cache (called when server data is received)
+     */
+    public static void clearCache() {
+        localCache.clear();
+        lastCacheInvalidation = System.currentTimeMillis();
     }
 
     /**

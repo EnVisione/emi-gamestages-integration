@@ -1,8 +1,8 @@
 package com.enviouse.emi_gamestages_link.mixin;
 
-import com.enviouse.emi_gamestages_link.LockRenderHelper;
-import com.enviouse.emi_gamestages_link.ModConfiguration;
-import com.enviouse.emi_gamestages_link.StageLockResolver;
+import com.enviouse.emi_gamestages_link.client.LockRenderHelper;
+import com.enviouse.emi_gamestages_link.common.ModConfiguration;
+import com.enviouse.emi_gamestages_link.client.ClientStageLockResolver;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.Bounds;
@@ -55,7 +55,7 @@ public abstract class SlotWidgetMixin {
                 continue;
             }
 
-            StageLockResolver.LockInfo lockInfo = StageLockResolver.getLockInfo(itemStack);
+            ClientStageLockResolver.LockInfo lockInfo = ClientStageLockResolver.getLockInfo(itemStack);
             if (lockInfo != null && lockInfo.isLocked()) {
                 Bounds bounds = getBounds();
 

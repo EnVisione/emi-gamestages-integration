@@ -1,5 +1,7 @@
-package com.enviouse.emi_gamestages_link;
+package com.enviouse.emi_gamestages_link.client;
 
+import com.enviouse.emi_gamestages_link.common.EmiGameStagesLink;
+import com.enviouse.emi_gamestages_link.common.ModConfiguration;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;

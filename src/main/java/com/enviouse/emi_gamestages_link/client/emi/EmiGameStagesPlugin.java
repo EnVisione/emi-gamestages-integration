@@ -1,6 +1,6 @@
-package com.enviouse.emi_gamestages_link.emi;
+package com.enviouse.emi_gamestages_link.client.emi;
 
-import com.enviouse.emi_gamestages_link.EmiGameStagesLink;
+import com.enviouse.emi_gamestages_link.common.EmiGameStagesLink;
 import dev.emi.emi.api.EmiEntrypoint;
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;

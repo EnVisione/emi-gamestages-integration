@@ -1,7 +1,7 @@
-package com.enviouse.emi_gamestages_link.jei;
+package com.enviouse.emi_gamestages_link.client.jei;
 
-import com.enviouse.emi_gamestages_link.EmiGameStagesLink;
-import com.enviouse.emi_gamestages_link.ModConfiguration;
+import com.enviouse.emi_gamestages_link.common.EmiGameStagesLink;
+import com.enviouse.emi_gamestages_link.common.ModConfiguration;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;

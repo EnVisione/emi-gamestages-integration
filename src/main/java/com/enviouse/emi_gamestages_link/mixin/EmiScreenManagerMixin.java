@@ -1,8 +1,8 @@
 package com.enviouse.emi_gamestages_link.mixin;
 
-import com.enviouse.emi_gamestages_link.LockRenderHelper;
-import com.enviouse.emi_gamestages_link.ModConfiguration;
-import com.enviouse.emi_gamestages_link.StageLockResolver;
+import com.enviouse.emi_gamestages_link.client.LockRenderHelper;
+import com.enviouse.emi_gamestages_link.common.ModConfiguration;
+import com.enviouse.emi_gamestages_link.client.ClientStageLockResolver;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.runtime.EmiDrawContext;
@@ -80,7 +80,7 @@ public abstract class EmiScreenManagerMixin {
                             continue;
                         }
 
-                        StageLockResolver.LockInfo lockInfo = StageLockResolver.getLockInfo(itemStack);
+                        ClientStageLockResolver.LockInfo lockInfo = ClientStageLockResolver.getLockInfo(itemStack);
                         if (lockInfo != null && lockInfo.isLocked()) {
                             // Draw lock at top-left of slot (slot position is cx+1, cy+1)
                             int padding = ModConfiguration.iconPadding;

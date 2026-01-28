@@ -1,7 +1,7 @@
-package com.enviouse.emi_gamestages_link.integration;
+package com.enviouse.emi_gamestages_link.common.integration;
 
-import com.enviouse.emi_gamestages_link.EmiGameStagesLink;
-import com.enviouse.emi_gamestages_link.ModConfiguration;
+import com.enviouse.emi_gamestages_link.common.EmiGameStagesLink;
+import com.enviouse.emi_gamestages_link.common.ModConfiguration;
 import net.minecraftforge.fml.ModList;
 
 /**
